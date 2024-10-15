@@ -4,6 +4,7 @@ import graphics.G;
 import music.I;
 import music.UC;
 import java.awt.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Ink implements I.Show{
@@ -26,7 +27,7 @@ public class Ink implements I.Show{
         norm.drawAt(g, vs);
     }
     //-----------------Norm----------------------------
-    public static class Norm extends G.PL {
+    public static class Norm extends G.PL implements Serializable {
         public static final int N = UC.normSampleSize, MAX = UC.normCoordMax;
         public static final G.VS NCS = new G.VS(0, 0, MAX, MAX);
         public Norm() {
@@ -49,6 +50,12 @@ public class Ink implements I.Show{
             }
             return res;
         }
+
+        public void blend(Norm n, int nBlend) {
+            for (int i = 0; i < N; i++) {
+                points[i].blend(n.points[i], nBlend);
+            }
+        }
     }
     //-----------------Buffer--------------------------
     public static class Buffer extends G.PL implements I.Show, I.Area{
@@ -68,7 +75,7 @@ public class Ink implements I.Show{
 
         public boolean hit(int x, int y) {return true;}
 
-        public void show(Graphics g) {drawN(g, n); bbox.draw(g);}
+        public void show(Graphics g) {drawN(g, n); /*bbox.draw(g);*/}
 
         public void subSample(G.PL pl) {
             int k = pl.size();

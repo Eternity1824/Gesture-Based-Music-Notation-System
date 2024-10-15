@@ -1,6 +1,7 @@
 package graphics;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.Random;
 
 public class G {
@@ -22,7 +23,7 @@ public class G {
 
     //-----------------------------V----------------------
 
-    public static class V {
+    public static class V implements Serializable {
         public static Transform T = new Transform();
         public int x, y;
         public V(int x, int y) {this.set(x, y);}
@@ -30,6 +31,7 @@ public class G {
         public void set(int x, int y) {this.x = x;this.y=y;}
         public void set(V v) {this.x = v.x;this.y = v.y;}
         public void add(V v){this.set(x + v.x, y + v.y);}
+        public void blend(V v, int k) {set((k * x + v.x) / (k + 1), (k * y + v.y) / (k + 1));}
         // Transform
         public void setT(V v) {set(v.tx(),v.ty());}
         public int tx() {return x * T.n / T.d + T.dx;}
@@ -60,7 +62,7 @@ public class G {
 
     //-----------------------------VS----------------------
 
-    public static class VS{
+    public static class VS implements Serializable {
         public V loc, size;
         public VS(int x, int y, int w, int h){loc = new V(x, y); size = new V(w, h);}
         public void fill(Graphics g,  Color c){g.setColor(c); g.fillRect(loc.x, loc.y, size.x, size.y);}
@@ -77,7 +79,7 @@ public class G {
 
     //-----------------------------LoHi----------------------
 
-    public static class LoHi{
+    public static class LoHi implements Serializable {
         public int lo, hi;
         public LoHi(int l0, int hi){this.lo = l0; this.hi = hi;}
         public void set(int v) {lo = v; hi = v;}
@@ -90,7 +92,7 @@ public class G {
 
     //-----------------------------BBox----------------------
 
-    public static class BBox{
+    public static class BBox implements Serializable {
         public LoHi h, v;// horizontal, vertical bound
         public BBox(){h = new LoHi(0, 0); v = new LoHi(0, 0);}
         public void set(int x, int y) {h.set(x); v.set(y);}
@@ -102,7 +104,7 @@ public class G {
 
     //-----------------------------PL----------------------
 
-    public static class PL{
+    public static class PL implements Serializable {
         //poly line
         public V[] points;
         public PL(int count){
@@ -114,7 +116,7 @@ public class G {
             for (int i = 1; i < n; i++) {
                 g.drawLine(points[i-1].x, points[i-1].y, points[i].x, points[i].y);
             }
-            drawDot(g, n);
+            //drawDot(g, n);
         }
         public void drawDot(Graphics g, int n){
             g.setColor(Color.BLUE);

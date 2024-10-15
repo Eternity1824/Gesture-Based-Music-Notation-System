@@ -7,4 +7,7 @@ public class UC {
     public static int normSampleSize = 25;
     public static int normCoordMax = 1000;
     public static int noMatchDist = 700000;
+    public static int dotThresHold = 5;
+    public static String shapeDataBasefilename = "shapeDB.dat";
+    public static int noBid = 10000;
 }
