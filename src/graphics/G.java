@@ -132,4 +132,19 @@ public class G {
         }
 
     }
+    //------------------------HC------------------------------
+    public static class HC {
+        public static HC ZERO = new HC(null, 0);
+        public HC dad;
+        public int dv;
+        public HC(HC dad, int dv) {
+            this.dad = dad;
+            this.dv = dv;
+        }
+
+        public int v() {
+            return dad == ZERO ? 0 : dad.v() + dv;
+        }
+
+    }
 }

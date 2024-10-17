@@ -24,6 +24,10 @@ public abstract class Reaction implements I.React{
     public void enable() {List list = byShape.getList(shape); if (!list.contains(this)) {list.add(this);}}
     public void disable() {List list = byShape.getList(shape); list.remove(this);}
     public static Reaction best(Gesture g) {return byShape.getList(g.shape).loBin(g);}
+    public static void nuke() {
+        byShape = new Map();
+        initialReactions.enable();
+    }
     //-------------------------List-------------------------
     public static class List extends ArrayList<Reaction> {
         public void addReaction(Reaction r) {add(r); r.enable();}
@@ -41,6 +45,8 @@ public abstract class Reaction implements I.React{
             }
             return res;
         }
+
+        public void enable() {for (Reaction r : this) {r.enable();}}
     }
 
     //-------------------------Map-------------------------

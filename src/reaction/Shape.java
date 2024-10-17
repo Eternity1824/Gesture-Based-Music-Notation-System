@@ -133,7 +133,7 @@ public class Shape implements Serializable {
                     add(new Shape.Prototype());
                 }
             }
-            private static int m = 10, w = 40;
+            private static int m = 10, w = 40, showBoxHeight = m + w;
             private static G.VS showBox = new G.VS(m, m, w, w);
             @Override
             public void show(Graphics g) {
@@ -167,6 +167,19 @@ public class Shape implements Serializable {
                 }
             }
         }
+        private boolean removePrototype(int x, int y) {
+            int H = Prototype.List.showBoxHeight;
+            if (y < H) {
+                int ndx = x / H;
+                Prototype.List pList = TRAINER.pList;
+                if (pList != null && ndx < pList.size()) {
+                    pList.remove(ndx);
+                    Ink.BUFFER.clear();
+                    return true;
+                }
+            }
+            return false;
+        }
         private Trainer() {}
         public void show(Graphics g) {
             G.bgWhite(g);
@@ -183,6 +196,7 @@ public class Shape implements Serializable {
         public void dn(int x, int y) {Ink.BUFFER.dn(x, y);}
         public void drag(int x, int y) {Ink.BUFFER.drag(x, y);}
         public void up(int x, int y) {
+            if (removePrototype(x, y)) {return;}
             Ink.BUFFER.up(x, y);
             Ink ink = new Ink();
             Shape.DB.train(curName, ink.norm);

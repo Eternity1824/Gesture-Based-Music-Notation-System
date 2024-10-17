@@ -2,7 +2,10 @@ package reaction;
 import graphics.G;
 import music.I;
 
+import java.util.ArrayList;
+
 public class Gesture {
+    private static List UNDO = new List();
     public static String recognized = "NULL";
     public Shape shape;
     public G.VS vs;
@@ -18,11 +21,11 @@ public class Gesture {
             Ink.BUFFER.clear();
             recognized = gest == null ? "NULL" : gest.shape.name;
             if (gest != null) {
-                Reaction r = Reaction.best(gest); // can fail, possibly no reaction want this
-                if (r != null) {
-                    r.act(gest);
-                } else {
-                    recognized += " no bids ";
+                if (gest.shape.name.equals("N-N")) {
+                    undo();
+                }
+                else {
+                    gest.doGesture();
                 }
             }
         }
@@ -35,10 +38,35 @@ public class Gesture {
         this.vs = vs;
     }
 
+    private void redoGesture() {
+        Reaction r = Reaction.best(this);
+        if (r != null) {r.act(this);}
+    }
+
+    private void doGesture() {
+        Reaction r = Reaction.best(this);
+        if (r != null) {UNDO.add(this); r.act(this);}
+        else {recognized += " no bids ";}
+    }
+
     public static Gesture getNew(Ink ink) {
         Shape s = Shape.recognize(ink);
         return s == null? null: new Gesture(s, ink.vs);
     }
 
+    public static void undo() {
+        if (UNDO.size() > 0) {
+            UNDO.remove(UNDO.size() - 1);
+            Layer.nuke(); // eliminating all masses
+            Reaction.nuke(); // clear byShape then reloads initial reactions
+            UNDO.redo();
+        }
+    }
+    //-----------------------List--------------------------------
+    public static class List extends ArrayList<Gesture> {
+        private void redo() {
+            for (Gesture gest : this) {gest.redoGesture();}
+        }
+    }
 
 }
