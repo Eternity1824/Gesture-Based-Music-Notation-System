@@ -143,7 +143,7 @@ public class G {
         }
 
         public int v() {
-            return dad == ZERO ? 0 : dad.v() + dv;
+            return dad == ZERO ? dv : dad.v() + dv;
         }
 
     }

@@ -1,9 +1,7 @@
 package music;
 import graphics.G;
 import graphics.WinApp;
-import reaction.Gesture;
-import reaction.Ink;
-import reaction.Layer;
+import reaction.*;
 import reaction.Shape;
 
 import java.awt.*;
@@ -18,6 +16,19 @@ public class MusicEd extends WinApp {
 
     public MusicEd() {
         super("Music Editor", UC.screenWidth, UC.screenHeight);
+
+
+        Reaction.initialReactions.addReaction(new Reaction("W-W") {
+            public int bid(Gesture g) {
+                return 0;
+            }
+
+            public void act(Gesture g) {
+                int y = g.vs.yM();
+                PAGE = new Page(y);
+                this.disable();
+            }
+        });
     }
 
     public void paintComponent(Graphics g) {
