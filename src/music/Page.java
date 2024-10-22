@@ -12,6 +12,7 @@ public class Page extends Mass {
     public int sysGap;
     public G.HC pageTop;
     public Sys.List sysList;
+    public int maxH = 0;
 
     public Page(int y) {
         super("BACK");
@@ -20,6 +21,7 @@ public class Page extends Mass {
         G.HC sysTop = new G.HC(pageTop, 0);
         sysList = new Sys.List();
         sysList.add(new Sys(this, sysTop));
+        updateMaxH();
         // add reactions
         addReaction(new Reaction("W-W"){ // add new staff to first system
             public int bid(Gesture g) {
@@ -58,6 +60,12 @@ public class Page extends Mass {
     }
 
     public void show(Graphics g) {g.setColor(Color.black);}
+
+    public void updateMaxH() {
+        Sys sys = sysList.get(0);
+        int newH = sys.staffs.get(sys.staffs.size() - 1).fmt.H;
+        if (newH > maxH) {maxH = newH;}
+    }
 
     //--------------------Margins---------------------
     public static class Margins {

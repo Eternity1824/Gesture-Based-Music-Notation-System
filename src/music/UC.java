@@ -12,4 +12,5 @@ public class UC {
     public static int noBid = 10000;
     public static int minStaffGap = 40;
     public static int minSysGap = 40;
+    public static final int barToMarginSnap = 20;
 }

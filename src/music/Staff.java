@@ -1,7 +1,9 @@
 package music;
 
 import graphics.G;
+import reaction.Gesture;
 import reaction.Mass;
+import reaction.Reaction;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -18,11 +20,28 @@ public class Staff extends Mass {
         this.iStaff = iStaff;
         this.staffTop = staffTop;
 
+        addReaction(new Reaction("S-S") {
+            @Override
+            public int bid(Gesture g) {
+                Page page = sys.page;
+                int x = g.vs.xM(),  y1 = g.vs.yL(), y2 = g.vs.yH();
+                if (x < page.margins.left || x > page.margins.right + UC.barToMarginSnap) {return UC.noBid;}
+                int d = Math.abs(y1 - Staff.this.yTop()) + Math.abs(y2 - Staff.this.yBot());
+                // allow S-S cycle bar gesture to outbid this
+                return d < 30 ? d + UC.barToMarginSnap : UC.noBid;
+            }
+
+            @Override
+            public void act(Gesture g) {
+                new Bar(Staff.this.sys, g.vs.xM());
+
+            }
+        });
     }
 
     public int yTop() {return staffTop.v();}
 
-    public int yOfLine(int line) {return yTop() + line + line * fmt.H;}
+    public int yOfLine(int line) {return yTop() + line * fmt.H;}
 
     public int yBot() {return yOfLine(2 * (fmt.nLines - 1));}
 
