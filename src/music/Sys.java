@@ -12,14 +12,17 @@ public class Sys extends Mass {
     public Page page;
     public int iSys;
     public Staff.List staffs;
+    public Time.List times;
 
     public Sys(Page page, G.HC sysTop) {
         super("BACK");
         this.page = page;
         iSys = page.sysList.size();
         staffs = new Staff.List(sysTop);
+        times = new Time.List(this);
+
         if (iSys == 0) {
-            staffs.add(new Staff(this, 0, new G.HC(sysTop, 0)));
+            staffs.add(new Staff(this, 0, new G.HC(sysTop, 0), new Staff.Fmt(5, 8)));
         } else {
             Sys oldSys = page.sysList.get(0);
             for (Staff oldStaff : oldSys.staffs) {
@@ -30,6 +33,8 @@ public class Sys extends Mass {
         }
     }
 
+    public Time getTime(int x) {return times.getTime(x);}
+
     public int yTop() {return staffs.sysTop();}
 
     public int yBot() {return staffs.getLast().yBot();}
@@ -39,7 +44,7 @@ public class Sys extends Mass {
     public void addNewStaff(int y) {
         int off = y - staffs.sysTop(); // offset
         G.HC staffTop = new G.HC(staffs.sysTop, off);
-        staffs.add(new Staff(this, staffs.size(), staffTop));
+        staffs.add(new Staff(this, staffs.size(), staffTop, new Staff.Fmt(5, 8)));
         page.updateMaxH();
     }
 
