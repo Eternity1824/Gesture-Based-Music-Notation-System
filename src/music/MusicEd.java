@@ -69,7 +69,7 @@ public class MusicEd extends WinApp {
         trainButton(me);
         repaint();
     }
-    public void keyPressed(KeyEvent ke) {if (training) {Shape.TRAINER.keyTyped(ke); repaint();}}
+    public void keyTyped(KeyEvent ke) {if (training) {Shape.TRAINER.keyTyped(ke); repaint();}}
 
     public static void main(String[] args) {
         PANEL = new MusicEd();
