@@ -62,7 +62,7 @@ public class MusicEd extends WinApp {
     public void trainButton(MouseEvent me) {
         if (me.getX() > UC.screenWidth - 40 && me.getY() < 40) {
             training = !training;
-            curArea = training ? Shape.TRAINER : Gesture.AREA;  ;
+            curArea = training ? Shape.TRAINER : Gesture.AREA;
         }
     }
 

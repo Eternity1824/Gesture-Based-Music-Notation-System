@@ -23,10 +23,11 @@ public class Time {
             int y = h.y();
             if (y > y1 && y < y2) {h.joinStem(s);}
         }
-        if (s.heads.size() == 0) {
+        if (s.heads.isEmpty()) {
             System.out.println("Empty stem heads after stemming");
         } else {
             s.setWrongSide();
+            s.staff.sys.stems.addStem(s);
         }
     }
 
