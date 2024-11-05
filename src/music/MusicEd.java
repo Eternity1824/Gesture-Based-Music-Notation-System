@@ -37,6 +37,11 @@ public class MusicEd extends WinApp {
         });
     }
 
+//    public static int[] xPoly = {100, 200, 200, 100};
+//    public static int[] yPoly = {50, 70, 80, 60};
+//    public static Polygon poly = new Polygon(xPoly, yPoly, 4);
+
+
     public void paintComponent(Graphics g) {
         G.bgWhite(g);
         if (training) {
@@ -55,8 +60,21 @@ public class MusicEd extends WinApp {
 //            g.drawRect(200, PAGE.margins.top*3*H, 24*H/10, 2*H);
 
         }
+//        Beam.setPoly(100, 100 + G.rnd(100), 200, 100 + G.rnd(100), 8);
+//        g.fillPolygon(Beam.poly);
+//        yPoly[3]++;
+//        poly.ypoints[3]++;
 
+//        testBeamStack(g);
+    }
 
+    public void testBeamStack(Graphics g) {
+        int H = 8, x1 = 100, x2 = 200;
+        Beam.setMasterBeam(x1, 100 + G.rnd(100), x2, G.rnd(100));
+        g.drawLine(0, Beam.my1, 100, Beam.my1);
+        Beam.drawBeamStack(g, 0, 1, x1, x2, H);
+        g.setColor(Color.ORANGE);
+        Beam.drawBeamStack(g, 1, 3, x1 + 10, x2 + 10, H);
     }
 
     public void trainButton(MouseEvent me) {

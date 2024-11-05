@@ -18,18 +18,22 @@ public class Stem extends Duration implements Comparable<Stem> {
     public boolean isUp = true;
     public Beam beam = null;
 
-    public Stem(Staff staff, boolean up){
+    public Stem(Staff staff, Head.List heads, boolean up){
         this.staff = staff;
         isUp = up;
+        for (Head h : heads) {h.unStem(); h.stem = this;}
+        this.heads = heads;
+        staff.sys.stems.addStem(this);
+        setWrongSide();
 
         addReaction(new Reaction("E-E") {
             public int bid(Gesture g) {
                 int y = g.vs.yM(), x1 = g.vs.xL(), x2 = g.vs.xH();
-                int xS = Stem.this.heads.get(0).time.x;
+                int xS = Stem.this.x();
                 if (x1 > xS || x2 < xS) {return UC.noBid;}
                 int y1 = Stem.this.yLo(), y2 = Stem.this.yHi();
                 if (y < y1 || y > y2) {return UC.noBid;}
-                return Math.abs(y - (y1 +y2)/2);
+                return Math.abs(y - (y1 +y2)/2) + 60; // allow sys "E-E" underbid this
             }
 
             public void act(Gesture g) {
@@ -40,7 +44,7 @@ public class Stem extends Duration implements Comparable<Stem> {
         addReaction(new Reaction("W-W") {
             public int bid(Gesture g) {
                 int y = g.vs.yM(), x1 = g.vs.xL(), x2 = g.vs.xH();
-                int xS = Stem.this.heads.get(0).time.x;
+                int xS = Stem.this.x();
                 if (x1 > xS || x2 < xS) {return UC.noBid;}
                 int y1 = Stem.this.yLo(), y2 = Stem.this.yHi();
                 if (y < y1 || y > y2) {return UC.noBid;}
@@ -52,13 +56,26 @@ public class Stem extends Duration implements Comparable<Stem> {
             }
         });
     }
+    // factory method
+    public static Stem getStem(Staff staff, Time time, int y1, int y2, boolean up){
+        Head.List heads = new Head.List();
+        for (Head h : time.heads) {
+            int yH = h.y();
+            if (yH > y1 && yH < y2) {heads.add(h);}
+        }
+        if (heads.isEmpty()) {return null;} // no stem return if no heads
+        Beam b = internalStems(staff.sys, time.x, y1, y2); // possibly this is internal stem in beams group
+        Stem result = new Stem(staff, heads, up);
+        if (b != null) {b.addStem(result); result.nFlag = 1; return result;}
+        return result;
+    }
 
     @Override
     public void show(Graphics g) {
         if (nFlag >= -1 && !heads.isEmpty()) {
             int x = x(), H = staff.fmt.H, yH = yFirstHead(), yB = yBeanEnd();
             g.drawLine(x, yH, x, yB);
-            if (nFlag > 0) {
+            if (nFlag >= 0 && beam == null) {
                 if (nFlag == 1) {(isUp ? Glyph.FLAG1D : Glyph.FLAG1U).showAt(g, H, x(), yBeanEnd());}
                 if (nFlag == 2) {(isUp ? Glyph.FLAG2D : Glyph.FLAG2U).showAt(g, H, x(), yBeanEnd());}
                 if (nFlag == 3) {(isUp ? Glyph.FLAG3D : Glyph.FLAG3U).showAt(g, H, x(), yBeanEnd());}
@@ -94,6 +111,7 @@ public class Stem extends Duration implements Comparable<Stem> {
         if (this == beam.first() || this == beam.last()) {return false;}
         return true;
     }
+    
 
     public int x() {
         Head h = firstHead();
@@ -118,6 +136,17 @@ public class Stem extends Duration implements Comparable<Stem> {
             ph = nh;
         }
     }
+
+    public static Beam internalStems(Sys sys, int x, int y1, int y2) {
+        for (Stem s: sys.stems) {
+            if (s.beam != null && s.x() < x && s.yLo() < y2 && s.yHi() > y1) {
+                int bX = s.beam.first().x(), bY = s.beam.first().yBeanEnd();
+                int eX = s.beam.last().x(), eY = s.beam.last().yBeanEnd();
+                if (Beam.verticalLineCrossSegment(x, y1, y2, bX, bY, eX, eY)) {return s.beam;}
+            }
+        }
+        return null;
+    }
     //----------------------List---------------------
     public static class List extends ArrayList<Stem> {
         public int yMin = 1000000, yMax = -1000000;
@@ -127,7 +156,18 @@ public class Stem extends Duration implements Comparable<Stem> {
             if (s.yHi() > yMax) {yMax = s.yHi();}
         }
 
-        public boolean fastReject(int y) {return y > yMax || y < yMin;}
+        public boolean fastReject(int y) {System.out.println("y:"+y+"ymax: "+yMax+"ymin:"+yMin);return y > yMax || y < yMin;}
+
+        public ArrayList<Stem> allIntersecters(int x1, int y1, int x2, int y2) {
+            ArrayList<Stem> res = new ArrayList<>();
+            for (Stem s: this) {
+                if (Beam.verticalLineCrossSegment(s.x(), s.yLo(), s.yHi(), x1, y1, x2, y2)) {
+                    res.add(s);
+                }
+            }
+            return res;
+        }
+
         public void sort() {
             Collections.sort(this);
         }
